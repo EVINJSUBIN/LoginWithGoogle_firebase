@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Login with Firebase</title>
+    <script type="module">
+        // Import Firebase app and auth modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+              apiKey: "AIzaSyDEbm-B0vsnY_qo_cdiGhXK7lOBs500kbA",
+              authDomain: "the-ev-bdad9.firebaseapp.com",
+              databaseURL: "https://the-ev-bdad9-default-rtdb.asia-southeast1.firebasedatabase.app",
+              projectId: "the-ev-bdad9",
+              storageBucket: "the-ev-bdad9.appspot.com",
+              messagingSenderId: "552007217470",
+              appId: "1:552007217470:web:252e3bd964e8a143c87c6f",
+              measurementId: "G-S4Y32NTKJV"
+     
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Google Sign-In function
+        window.googleSignIn = function() {
+            const provider = new GoogleAuthProvider();
+
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    const user = result.user;
+                    document.getElementById('user-info').innerHTML = `
+                        <h2>User Info:</h2>
+                        <p>Name: ${user.displayName}</p>
+                        <p>Email: ${user.email}</p>
+                        <img src="${user.photoURL}" alt="Profile Picture" width="100">
+                    `;
+                })
+                .catch((error) => {
+                    console.error("Error during sign in: ", error);
+                });
+        };
+
+        // Monitor auth state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("User is signed in: ", user);
+            } else {
+                console.log("No user is signed in.");
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Google Login with Firebase</h1>
+    <button onclick="googleSignIn()">Login with Google</button>
+    <div id="user-info"></div>
+</body>
+</html>
+
