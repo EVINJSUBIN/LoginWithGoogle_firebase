@@ -1,54 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Login with Firebase</title>
-    <script type="module">
-        // Import Firebase app and auth modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+        }
 
-        // Your web app's Firebase configuration
-           
-        const firebaseConfig = require('./firebaseConfig');
-        // Initialize Firebase
+        .profile-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 300px;
+            text-align: center;
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .profile-card img {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+        }
+
+        .profile-card h2 {
+            margin: 10px 0 5px;
+        }
+
+        .profile-card p {
+            margin: 0;
+            color: #555;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .login-btn {
+            background-color: #4285f4;
+            color: #fff;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            color: #fff;
+            margin-top: 15px;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { firebaseConfig } from "/firebaseConfig.js";
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Google Sign-In function
-        window.googleSignIn = function() {
+        window.googleSignIn = function () {
             const provider = new GoogleAuthProvider();
-
             signInWithPopup(auth, provider)
                 .then((result) => {
-                    const user = result.user;
-                    document.getElementById('user-info').innerHTML = `
-                        <h2>User Info:</h2>
-                        <p>Name: ${user.displayName}</p>
-                        <p>Email: ${user.email}</p>
-                        <img src="${user.photoURL}" alt="Profile Picture" width="100">
-                    `;
+                    displayUserInfo(result.user);
                 })
                 .catch((error) => {
                     console.error("Error during sign in: ", error);
                 });
         };
 
-        // Monitor auth state
+        window.googleSignOut = function () {
+            signOut(auth).then(() => {
+                document.querySelector('.profile-card').style.display = 'none';
+                document.getElementById('login-btn').style.display = 'block';
+            }).catch((error) => {
+                console.error("Error during sign out: ", error);
+            });
+        };
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                console.log("User is signed in: ", user);
+                displayUserInfo(user);
             } else {
-                console.log("No user is signed in.");
+                document.querySelector('.profile-card').style.display = 'none';
+                document.getElementById('login-btn').style.display = 'block';
             }
         });
+
+        function displayUserInfo(user) {
+            document.querySelector('.profile-card').style.display = 'flex';
+            document.getElementById('login-btn').style.display = 'none';
+            document.getElementById('user-name').textContent = user.displayName;
+            document.getElementById('user-email').textContent = user.email;
+            document.getElementById('user-photo').src = user.photoURL;
+        }
     </script>
 </head>
+
 <body>
     <h1>Google Login with Firebase</h1>
-    <button onclick="googleSignIn()">Login with Google</button>
-    <div id="user-info"></div>
-</body>
-</html>
+    <button id="login-btn" class="btn login-btn" onclick="googleSignIn()">Login with Google</button>
 
+    <div class="profile-card">
+        <img id="user-photo" alt="Profile Picture">
+        <h2 id="user-name"></h2>
+        <p id="user-email"></p>
+        <button class="btn logout-btn" onclick="googleSignOut()">Logout</button>
+    </div>
+</body>
+
+</html>

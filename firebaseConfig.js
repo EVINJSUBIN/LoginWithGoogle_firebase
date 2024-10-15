@@ -1,4 +1,4 @@
-const firebaseConfig = {
+export const firebaseConfig = {
     apiKey: "AIzaSyDEbm-B0vsnY_qo_cdiGhXK7lOBs500kbA",
     authDomain: "the-ev-bdad9.firebaseapp.com",
     databaseURL: "https://the-ev-bdad9-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -9,5 +9,3 @@ const firebaseConfig = {
     measurementId: "G-S4Y32NTKJV"
 
 };
-
-module.exports = firebaseConfig;
